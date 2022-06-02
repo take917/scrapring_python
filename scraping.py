@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 import pandas as pd
 
+
 options = Options()
 
 driver = webdriver.Chrome(options=options)
