@@ -9,31 +9,45 @@ options = Options()
 
 driver = webdriver.Chrome(options=options)
 
-url = "https://search.rakuten.co.jp/search/mall/ANKER/?f=0"
-driver.get(url)
 
-time.sleep(2)
+def scr(url):
 
-item_name = []
-url_list = []
-stock_flg =[]
+    driver.get(url)
 
-items=driver.find_elements_by_class_name("searchresultitem")
-for item in items:
-    title = item.find_element_by_class_name("title")
-    item_name.append(title.text)
+    time.sleep(2)
 
-    url = item.find_element_by_tag_name('a').get_attribute("href")
-    url_list.append(url)
+    item_name = []
+    url_list = []
+    stock_flg =[]
 
-    item = item.text
-    item = item.split('\n')
+    items=driver.find_elements_by_class_name("searchresultitem")
+    for item in items:
+        title = item.find_element_by_class_name("title")
+        item_name.append(title.text)
 
-    if "売り切れ" in item:
-        stock_flg.append(1)
-    else:
-        stock_flg.append(0)
+        url = item.find_element_by_tag_name('a').get_attribute("href")
+        url_list.append(url)
 
-df = pd.DataFrame([item_name,url_list,stock_flg]).T
-print(df)
-driver.quit()
+        item = item.text
+        item = item.split('\n')
+
+        if "売り切れ" in item:
+            stock_flg.append(1)
+        else:
+            stock_flg.append(0)
+
+    df = pd.DataFrame([item_name,url_list,stock_flg]).T
+    df.columns = ["item_name","url","stock_flg"]
+
+    driver.quit()
+
+    return df
+
+def main():
+    url = "https://search.rakuten.co.jp/search/mall/ANKER/?f=0"
+    df = scr(url)
+    print(df)
+    df.to_csv("test.csv")
+
+if __name__=="__main__":
+    main()
